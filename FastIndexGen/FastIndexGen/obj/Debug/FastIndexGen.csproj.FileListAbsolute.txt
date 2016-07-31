@@ -1,1 +1,0 @@
-c:\users\songj\documents\visual studio 2015\Projects\FastIndexGen\FastIndexGen\bin\Debug\FastIndexGen.exe.config
