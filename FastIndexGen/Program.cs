@@ -101,7 +101,7 @@ namespace FastIndexGen
 
                 writer.Write(offsetsTableData); // Old offsets table data.
 
-                for (var i = 0; i < amount; i++) // Add new offset table entires X amount of times
+                for (var i = 0; i < amount; i++) // Add new offset table entries X amount of times
                 {
                     writer.Write(endOfLastTag);
                     endOfLastTag += 0x40; // Increment offset to write into the table by the size of an empty cfgt tag.
