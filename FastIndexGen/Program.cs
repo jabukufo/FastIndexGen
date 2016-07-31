@@ -35,7 +35,7 @@ namespace FastIndexGen
             }
 
             Console.Write("Path to tags.dat: ");
-            var tagsPath = Console.ReadLine();
+            string tagsPath = Console.ReadLine();
 
             if (!File.Exists(tagsPath))
             {
@@ -45,11 +45,12 @@ namespace FastIndexGen
             }
 
             // Hardcoded byte[] equal to a new empty cfgt tag.
-            var cfgtEmpty = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                         0x30, 0x00, 0x00, 0x00, 0x74, 0x67, 0x66, 0x63, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                                         0xFC, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
+            byte[] cfgtEmpty = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                            0x30, 0x00, 0x00, 0x00, 0x74, 0x67, 0x66, 0x63, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                            0xFC, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+            
+            uint tagSize = (uint)cfgtEmpty.Count();
 
             // initializing variables for holding data.
             uint offsetsTableOffset = 0x00;
@@ -88,10 +89,10 @@ namespace FastIndexGen
             using (BinaryWriter writer = new BinaryWriter(File.Open(tagsPath, FileMode.Create)))
             {
                 uint amount = lastTag - tagsCount + 1; // Amount of tags to add
-                uint tagBytes = (uint)cfgtEmpty.Count() * amount; // Size of the new tag data being added.
+                uint tagBytes = tagSize * amount; // Size of the new tag data being added.
 
                 writer.Write(0); // 4-byte padding at beginning of file
-                writer.Write(offsetsTableOffset + tagBytes); // New Location of the offsets table
+                writer.Write(offsetsTableOffset + tagBytes); // New offset of the offsets table
                 writer.Write(tagsCount + amount); // Amount of tags in tags.dat
                 writer.Write(0); // 4-byte padding following the tags-count in header.
                 writer.Write(oldData); // Old tag data
@@ -104,7 +105,7 @@ namespace FastIndexGen
                 for (var i = 0; i < amount; i++) // Add new offset table entries X amount of times
                 {
                     writer.Write(endOfLastTag);
-                    endOfLastTag += 0x40; // Increment offset to write into the table by the size of an empty cfgt tag.
+                    endOfLastTag += tagSize; // Increment offset to write into the table by the size of an empty cfgt tag.
                 }
             }
 
